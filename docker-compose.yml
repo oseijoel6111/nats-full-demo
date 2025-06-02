@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js"] # Enable JetStream
+  app:
+    build: .
+    environment:
+      - NATS_URL=nats://nats:4222
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["node", "core/subscriber.js"]
+    depends_on:
+      - nats
